@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon.svg" />
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon.svg" />
+    <link rel="manifest" href="./site.webmanifest" />
+    <link rel="preconnect" href="https://unpkg.com/" />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com/" />
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css" />
+    <link rel="stylesheet" href="./css/master.css" />
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/2.5.94/css/materialdesignicons.min.css">
+    <!-- --- เปลี่ยนชื่อหน้าใน Tag นี้ --- -->
+    <title>Pre-Dek Work | Partner</title>
+</head>
+
+<body style=" background-image: url('../assets/background.png');background-size: cover; background-position: fixed; background-repeat: no-repeat; background-attachment: fixed; background-position: center;">
+    <div id="app">
+        <!-- --- เริ่มแก้ไขตั้งแต่ตรงนี้ --- -->
+        <!--/////////////////////////////////////////////navbar//////////////////////////////////////////////////-->
+        <nav style=" padding: 1rem;" class="navbar" role="navigation" aria-label="main navigation">
+            <div class="container">
+                <div class="navbar-item">
+                    <img src="./favicon.svg" style="max-height:50px">
+                </div>
+                <div id="navbarBasicExample" class="navbar-menu">
+                    <div class="navbar-start">
+                        <b-navbar-item href="/preDekHome">หน้าแรก</b-navbar-item>
+                        <b-navbar-item href="/preDekResponse">บริษัทที่สนใจคุณ</b-navbar-item>
+                        <b-navbar-item href="/prePartner">ฝึกประสบการณ์</b-navbar-item>
+                        <b-navbar-item href="/preSolfSkill">ฝึก Solf Skill</b-navbar-item>
+                    </div>
+                    <div class="navbar-end">
+                        <div class="navbar-item">
+                            <b-button type="is-info" @click="gotprofile()" outlined>{{cerUser.u_email}}</b-button>
+                        </div>
+                        <div class="navbar-item">
+                            <b-button type="is-danger" @click="checkUserLogout()" outlined>Logout</b-button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <!--/////////////////////////////////////////////navbar//////////////////////////////////////////////////-->
+
+        <div class="container">
+            <div class="columns">
+                <div class="column is-two-thirds work-list is-centered">
+                    <div class="spacer is-1x"></div>
+                    <nav class="level">
+                        <div class="level-left">
+                            <h2 class="title is-3">ฝึกประสบการณ์กับเรา</h2>
+                        </div>
+                        <div class="level-right">
+                            <!-- <p class="content"><b>Selected:</b> {{ selected }}</p> -->
+                            <b-field>
+                                <b-autocomplete rounded v-model="name" :data="filteredDataArray" :open-on-focus="true" field="p_type" placeholder="ค้นหา" icon="magnify" clearable @select="option => selected = option.p_type">
+                                    <template slot="empty">No results found</template>
+                                </b-autocomplete>
+                            </b-field>
+                        </div>
+                    </nav>
+                    <hr />
+                    <div class="spacer is-1x"></div>
+                    <article v-for="(detail,n) in PartnerList" :key="n" :value="n" v-if="detail.p_type===name" class="media">
+                        <div class="media-left">
+                            <figure v-if="detail.p_imgName !='none'" class="image is-96x96">
+                                <img style="object-fit: scale-down;height: 96px;" :src="'./assets/Partner/' + detail.p_imgName" />
+                                <!-- ใส่ : หน้า src -->
+                            </figure>
+
+                            <figure v-else class="image is-96x96">
+                                <img style="width: 96px;height: 96px;" src="https://bulma.io/images/placeholders/96x96.png" />
+                                <!-- ใส่ : หน้า src -->
+                            </figure>
+                        </div>
+                        <div class="media-content">
+                            <div class="media-content">
+                                <div class="content">
+                                    <div>
+                                        <p style="margin-bottom: 7px;">
+                                            <strong>ชื่อบริษัท :</strong> {{detail.p_name}} &nbsp;&nbsp;&nbsp;<strong>ตำแหน่งที่ต้องการ :</strong> {{detail.p_position}} <br/>
+                                            <strong>ลักษณะงาน :</strong> {{detail.p_type}} &nbsp;&nbsp;&nbsp;<br/>
+                                            <strong>เขตหรือสถานที่ปฏิบัติงาน :</strong> {{detail.p_where}}
+                                        </p>
+                                    </div>
+                                    <div class="level-right">
+                                        <b-button type="is-info" style="margin: 2px;" @click="popup(n)">ดูรายละเอียด</b-button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article v-for="(detail,n) in PartnerList" :key="n" :value="n" v-if="selected===null || name ===''" class="media">
+                        <div class="media-left">
+                            <figure v-if="detail.p_imgName !='none'" class="image is-96x96">
+                                <img style="object-fit: scale-down;height: 96px;" :src="'./assets/Partner/' + detail.p_imgName" />
+                                <!-- ใส่ : หน้า src -->
+                            </figure>
+
+                            <figure v-else class="image is-96x96">
+                                <img style="width: 96px;height: 96px;" src="https://bulma.io/images/placeholders/96x96.png" />
+                                <!-- ใส่ : หน้า src -->
+                            </figure>
+                        </div>
+                        <div class="media-content">
+                            <div class="media-content">
+                                <div class="content">
+                                    <div>
+                                        <p style="margin-bottom: 7px;">
+                                            <strong>ชื่อบริษัท :</strong> {{detail.p_name}} &nbsp;&nbsp;&nbsp;<strong>ตำแหน่งที่ต้องการ :</strong> {{detail.p_position}} <br/>
+                                            <strong>ลักษณะงาน :</strong> {{detail.p_type}} &nbsp;&nbsp;&nbsp;<br/>
+                                            <strong>เขตหรือสถานที่ปฏิบัติงาน :</strong> {{detail.p_where}}
+                                        </p>
+                                    </div>
+                                    <div class="level-right">
+                                        <b-button type="is-info" style="margin: 2px;" @click="popup(n)">ดูรายละเอียด</b-button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+
+                    <b-modal :active.sync="popupVar" :width="600" scroll="keep">
+                        <div class="card">
+                            <header class="modal-card-head">
+                                <div class="title is-5">
+                                    <div class="title is-5">
+                                        ข้อมูลเกี่ยวกับงาน
+                                    </div>
+                                </div>
+                            </header>
+                            <div class="card-content">
+                                <div class="columns">
+                                    <div class="column is-12">
+                                        <div class="field">
+                                            <label class="label">ชื่อบริษัท </label>
+                                            <b-field>
+                                                <b-input type="text" v-model="PartnerList[index].p_name" readonly></b-input>
+                                            </b-field>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="columns">
+                                    <div class="column is-12">
+                                        <div class="field">
+                                            <label class="label">ตำแหน่งที่ต้องการ</label>
+                                            <b-field>
+                                                <b-input type="text" v-model="PartnerList[index].p_position" readonly></b-input>
+                                            </b-field>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="columns">
+                                    <div class="column is-12">
+                                        <div class="field">
+                                            <label class="label">ลักษณะงาน</label>
+                                            <b-field>
+                                                <b-input type="text" v-model="PartnerList[index].p_type" readonly></b-input>
+                                            </b-field>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="columns">
+                                    <div class="column is-12">
+                                        <div class="field">
+                                            <label class="label">เขตหรือสถานที่ปฏิบัติงาน</label>
+                                            <b-field>
+                                                <b-input type="text" v-model="PartnerList[index].p_where" readonly></b-input>
+                                            </b-field>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="columns">
+                                    <div class="column is-12">
+                                        <div class="field">
+                                            <label class="label">คุณสมบัติ</label>
+                                            <b-field>
+                                                <textarea class="textarea" placeholder="address" v-model="PartnerList[index].p_detail_req" readonly></textarea>
+                                            </b-field>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="columns">
+                                    <div class="column is-12">
+                                        <div class="field">
+                                            <label class="label">สวัสดิการ</label>
+                                            <b-field>
+                                                <textarea class="textarea" placeholder="address" v-model="PartnerList[index].p_welfare" readonly></textarea>
+                                            </b-field>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="level-right">
+                                    <b-button type="is-info" style="margin: 2px;" @click="popupVar=false">สมัคร</b-button>
+                                    <b-button type="is-danger" style="margin: 2px;" @click="popupVar=false">ปิด</b-button>
+                                </div>
+                            </div>
+                        </div>
+                    </b-modal>
+
+
+
+
+                    <!-- </div> -->
+                </div>
+                <div style="box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+                background-color: rgba(255, 255, 255, 0.9);
+                margin: 20px;text-align: center;" class="column is-centered">
+                    <h1>พื้นที่โฆษณา</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="./js/buefy.min.js"></script>
+    <style lang="scss" scoped>
+        .box-input {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 40px 40px 40px 40px;
+            margin: 20px;
+        }
+        
+        .work-list {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px 15px 15px 15px;
+            min-height: 86vh;
+            margin: 20px;
+            margin-top: 25px;
+        }
+    </style>
+
+    <script defer>
+        // --- เขียน Vue ในนี้จ้า ---
+        new Vue({
+            el: "#app",
+            data: {
+                cerUser: [],
+                PartnerList: [],
+                popupVar: false,
+                index: 0,
+                name: '',
+                selected: null
+            },
+            computed: {
+                filteredDataArray() {
+                    return this.PartnerList.filter((option) => {
+                        return option.p_type
+                            .toString()
+                            .toLowerCase()
+                            .indexOf(this.name.toLowerCase()) >= 0
+                    })
+                }
+            },
+            methods: {
+                ///////////////////////// check for Pre-Dek /////////////////////
+                checkUserIsLogin() {
+                    const loadingComponent = this.$buefy.loading.open();
+                    fetch("/api/check", {
+                            method: "POST",
+                        })
+                        .then(response => {
+                            if (response.ok) return response.json()
+                            else window.location.href = "./loginUser"
+                        })
+                        .then(data => {
+                            this.cerUser = data;
+                            if (data.u_role === 'admin' || (data.u_role === 'pre-dek' && data.activate_status === 'success')) {
+                                console.log()
+                            } else if (data.u_role === 'work') {
+                                if (data.activate_status === 'unsuccess') {
+                                    window.location.href = "./workDetail"
+                                } else {
+                                    window.location.href = "./workHome"
+                                }
+                            } else {
+                                window.location.href = "./preDekDetail"
+                            }
+                        })
+                    setTimeout(() => loadingComponent.close(), 1000)
+                },
+                ////////////////////////////////////////////////////////////////////
+
+                /////////////////////////logout////////////////////////////////////
+                checkUserLogout() {
+                    fetch("/api/logout")
+                        .then(response => {
+                            if (response.ok) {
+                                window.location.href = "./loginUser"
+                            }
+                        })
+                },
+                gotprofile() {
+                    window.location.href = "./preDekProfile"
+                }
+
+
+                ,
+
+
+                getpartnerList() {
+                    const loadingComponent = this.$buefy.loading.open();
+                    fetch("/api/Partnerlist")
+                        .then(response => {
+                            if (response.ok) {
+                                return response.json()
+                            }
+                        })
+                        .then(data => {
+                            this.PartnerList = data;
+                        })
+                    setTimeout(() => loadingComponent.close(), 1000)
+                },
+                ///////////////////////////////////////////////////////////////////////
+                popup(index) {
+                    this.popupVar = true;
+                    this.index = index;
+
+                }
+            },
+            created: function() {
+                this.checkUserIsLogin();
+                this.getpartnerList();
+            },
+        });
+    </script>
+</body>
+
+</html>

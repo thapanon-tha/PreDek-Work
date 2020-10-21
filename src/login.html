@@ -1,0 +1,162 @@
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon.svg" />
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon.svg" />
+    <link rel="manifest" href="./site.webmanifest" />
+    <link rel="preconnect" href="https://unpkg.com/" />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com/" />
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css" />
+    <link rel="stylesheet" href="./css/master.css" />
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/2.5.94/css/materialdesignicons.min.css">
+    <!-- --- เปลี่ยนชื่อหน้าใน Tag นี้ --- -->
+    <title>Pre-Dek Work | Login</title>
+</head>
+
+<body style=" min-height: 101.25vh; background-image: url('../assets/background.png');background-size: cover; background-position: fixed; background-repeat: no-repeat; background-attachment: fixed; background-position: center;">
+    <div id="app">
+        <!-- --- เริ่มแก้ไขตั้งแต่ตรงนี้ --- -->
+
+        <div style="position: absolute;top: 25%;width: 100%;">
+            <div class="columns is-mobile is-vcentered is-centered">
+                <div class="column is-5-tablet is-12-mobile content box-input">
+                    <div style="width:80%;margin:auto">
+                        <form>
+                            <div class="spacer is-1x"></div>
+                            <h1>เข้าสู่ระบบ</h1>
+                            <hr />
+                            <b-field label="อีเมล" type="input">
+                                <b-input type="email" v-model="email" placeholder="e-mail"></b-input>
+                            </b-field>
+                            <b-field label="รหัสผ่าน">
+                                <b-input v-model="password" type="password" placeholder="••••••••"></b-input>
+                            </b-field>
+                            <div class="spacer is-2x"></div>
+                            <b-button type="is-primary is-success" @click="loginCheck()" expanded>เข้าสู่ระบบ
+                            </b-button>
+                            <div class="spacer is-1x"></div>
+                            <div class="has-text-centered">
+                                <a href="/Register" style="text-decoration:underline ">สมัครสมาชิก</a>
+                            </div>
+                            <div class="spacer is-1x"></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- --- อย่าแก้อะไรหลังจากนี้ --- -->
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="./js/buefy.min.js"></script>
+    <style lang="scss" scoped>
+        .box-input {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+            background-color: rgba(255, 255, 255, 0.9);
+            ;
+            border-radius: 40px 40px 40px 40px;
+        }
+    </style>
+    <script defer>
+        // --- เขียน Vue ในนี้จ้า ---
+        new Vue({
+            el: "#app",
+            data: {
+                email: "",
+                password: ""
+            },
+            computed: {},
+            methods: {
+                loginCheck() {
+                    const loadingComponent = this.$buefy.loading.open();
+                    if (this.username === "" || this.password === "") {
+                        this.$buefy.toast.open({
+                            duration: 3000,
+                            message: 'กรุณาหรอกข้อมูลให้ครบ!',
+                            type: 'is-danger'
+                        })
+                    } else {
+                        fetch("api/login", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+                                    email: this.email,
+                                    password: this.password,
+                                }),
+                            })
+                            .then(response => {
+                                if (response.ok) return response.json()
+                            })
+                            .then(data => {
+                                if (data.u_role === 'admin') {
+                                    window.location.href = "./preDekHome" //admin page
+                                } else if (data.u_role === 'pre-dek' && data.activate_status === 'success') {
+                                    window.location.href = "./preDekHome"
+                                } else if (data.u_role === 'work' && data.activate_status === 'success') {
+                                    window.location.href = "./workHome"
+                                } else if (data.u_role === 'pre-dek' && data.activate_status === 'unsuccess') {
+                                    window.location.href = "./preDekDetail"
+                                } else if (data.u_role === 'work' && data.activate_status === 'unsuccess') {
+                                    window.location.href = "./workDetail"
+                                }
+                            })
+                            .catch(error => {
+                                this.$buefy.toast.open({
+                                    duration: 3000,
+                                    message: 'อีเมลหรือรหัสผ่านไม่ถูกต้อง!',
+                                    type: 'is-danger'
+                                })
+                                loadingComponent.close()
+                            })
+                    }
+                    setTimeout(() => loadingComponent.close(), 5000)
+                },
+                checkUserIsLogin() {
+                    const loadingComponent = this.$buefy.loading.open();
+                    fetch("/api/check", {
+                            method: "POST",
+                        })
+                        .then(response => {
+                            if (response.ok) return response.json()
+                        })
+                        .then(data => {
+                            if (!data) return
+                            if (data.u_role === 'admin') {
+                                window.location.href = "./preDekHome"
+                            } else if (data.u_role === 'pre-dek' && data.activate_status === 'success') {
+                                window.location.href = "./preDekHome"
+                            } else if (data.u_role === 'work' && data.activate_status === 'success') {
+                                window.location.href = "./workHome"
+                            } else if (data.u_role === 'pre-dek' && data.activate_status === 'unsuccess') {
+                                window.location.href = "./preDekDetail"
+                            } else if (data.u_role === 'work' && data.activate_status === 'unsuccess') {
+                                window.location.href = "./workDetail"
+                            }
+                        })
+                    setTimeout(() => loadingComponent.close(), 1000)
+                },
+            },
+            created: function() {
+                this.checkUserIsLogin();
+            },
+
+        }, );
+    </script>
+
+
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon.svg" />
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon.svg" />
+    <link rel="manifest" href="./site.webmanifest" />
+    <link rel="preconnect" href="https://unpkg.com/" />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com/" />
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css" />
+    <link rel="stylesheet" href="./css/master.css" />
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/2.5.94/css/materialdesignicons.min.css">
+    <!-- --- เปลี่ยนชื่อหน้าใน Tag นี้ --- -->
+    <title>Pre-Dek Work | Check Response</title>
+</head>
+
+<body style=" background-image: url('../assets/background.png');background-size: cover; background-position: fixed; background-repeat: no-repeat; background-attachment: fixed; background-position: center;">
+    <div id="app">
+        <!--/////////////////////////////////////////////navbar//////////////////////////////////////////////////-->
+        <nav style=" padding: 1rem;" class="navbar" role="navigation" aria-label="main navigation">
+            <div class="container">
+                <div class="navbar-item">
+                    <img src="./favicon.svg" style="max-height:50px">
+                </div>
+                <div id="navbarBasicExample" class="navbar-menu">
+                    <div class="navbar-start">
+                        <b-navbar-item href="/preDekHome">หน้าแรก</b-navbar-item>
+                        <b-navbar-item href="/preDekResponse">บริษัทที่สนใจคุณ</b-navbar-item>
+                        <b-navbar-item href="/prePartner">ฝึกประสบการณ์</b-navbar-item>
+                        <b-navbar-item href="/preSolfSkill">ฝึก Solf Skill</b-navbar-item>
+                    </div>
+                    <div class="navbar-end">
+                        <div class="navbar-item">
+                            <b-button type="is-info" @click="gotprofile()" outlined>{{cerUser.u_email}}</b-button>
+                        </div>
+                        <div class="navbar-item">
+                            <b-button type="is-danger" @click="checkUserLogout()" outlined>Logout</b-button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <!--/////////////////////////////////////////////navbar//////////////////////////////////////////////////-->
+        <div class="container">
+            <div class="columns">
+                <div class="column is-two-thirds work-list is-centered">
+                    <div class="spacer is-1x"></div>
+                    <h2 class="title is-3">งานที่คุณมีสิทธิ์สัมภาษณ์</h2>
+                    <hr />
+                    <div class="spacer is-1x"></div>
+
+                    <div v-if="Invite !=''">
+                        <article v-for="(Invite,j) in Invite" :key="j" :value="j" class="media">
+                            <div class="media-left">
+                                <figure v-if="Invite.imgName !='none'" class="image is-96x96">
+                                    <img style="object-fit: scale-down;height: 96px;" :src="'./assets/pre-img/' + Invite.imgName" />
+                                    <!-- ใส่ : หน้า src -->
+                                </figure>
+
+                                <figure v-else class="image is-96x96">
+                                    <img style="width: 96px;height: 96px;" src="https://bulma.io/images/placeholders/96x96.png" />
+                                    <!-- ใส่ : หน้า src -->
+                                </figure>
+                            </div>
+                            <div class="media-content">
+                                <div class="media-content">
+                                    <div class="content">
+                                        <div>
+                                            <p style="margin-bottom: 7px;">
+                                                <strong>ชื่อบริษัท :</strong> {{Invite.com_name}} &nbsp;&nbsp;&nbsp;<strong>วันสัมภาษณ์งาน :</strong> {{Invite.interDate}} <br/>
+                                                <strong>ลักษณะงาน :</strong> {{Invite.workname}} &nbsp;&nbsp;&nbsp;<strong>จำนวนที่รับ :</strong> {{Invite.countmax}} &nbsp;&nbsp;&nbsp;<strong>เงินเดือน :</strong> {{Invite.price}} </p>
+                                            <p> <strong>ทักษะที่ต้องการ : </strong>
+                                                <span v-for="(skillList,i) in skillList[j]" :key="i" :value="i">
+                                            <span style="margin: 2px;" class="tag is-success is-light">
+                                                {{skillList.skill_name}}
+                                            </span>
+                                                </span>
+                                            </p>
+                                        </div>
+                                        <div class="level-right">
+                                            <b-button type="is-info" style="margin: 2px;" @click="popup(j)">ดูรายละเอียด</b-button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                        <hr />
+                    </div>
+                    <div v-else>
+                        <h1 style="font-size: 25px;">น่าเสียดายตอนนี้ยังไม่มีงานที่เหมาะกับคุณเลยกลับมาใหม่อีกครั้งนะ</h1>
+                    </div>
+
+
+                    <b-modal :active.sync="popupVar" :width="890" scroll="keep">
+                        <div class="card">
+                            <header class="modal-card-head">
+                                <div class="title is-5">
+                                    <div class="title is-5">
+                                        ข้อมูลเกี่ยวกับงาน
+                                    </div>
+                                </div>
+                            </header>
+                            <div class="card-content">
+                                <div class="columns">
+                                    <div class="column is-6">
+                                        <div class="field">
+                                            <label class="label">ชื่อบริษัท</label>
+                                            <b-field>
+                                                <b-input type="text" v-model="showDetail.com_name" readonly></b-input>
+                                            </b-field>
+                                        </div>
+                                    </div>
+                                    <div class="column is-6">
+                                        <div class="field">
+                                            <label class="label">ตำแหน่งที่รับ</label>
+                                            <b-field>
+                                                <b-input type="text" v-model="showDetail.lname" readonly></b-input>
+                                            </b-field>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="columns">
+                                    <div class="column is-4">
+                                        <div class="field">
+                                            <label class="label">วันสัมภาษณ์งาน</label>
+                                            <b-field>
+                                                <b-input type="text" v-model="showDetail.interDate" readonly></b-input>
+                                            </b-field>
+                                        </div>
+                                    </div>
+                                    <div class="column is-4">
+                                        <div class="field">
+                                            <label class="label">จำนวนที่รับ</label>
+                                            <b-field>
+                                                <b-input type="text" v-model="showDetail.countmax" readonly></b-input>
+                                            </b-field>
+                                        </div>
+                                    </div>
+                                    <div class="column is-4">
+                                        <div class="field">
+                                            <label class="label">ระดับการศึกษา</label>
+                                            <b-field>
+                                                <b-input type="text" v-model="showDetail.eLevel" readonly></b-input>
+                                            </b-field>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="columns">
+                                    <div class="column is-6">
+                                        <div class="field">
+                                            <label class="label">อายุ</label>
+                                            <b-field>
+                                                <b-input type="text" v-model="showDetail.Age" readonly></b-input>
+                                            </b-field>
+                                        </div>
+                                    </div>
+                                    <div class="column is-6">
+                                        <div class="field">
+                                            <label class="label">เงินเดือน</label>
+                                            <b-field>
+                                                <b-input type="text" v-model="showDetail.price" readonly></b-input>
+                                            </b-field>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="columns">
+                                    <div class="column is-4">
+                                        <div class="field">
+                                            <label class="label">ระยะเวลาในการจ้าง ( เดือน )</label>
+                                            <b-field>
+                                                <b-input type="text" v-model="showDetail.time" readonly></b-input>
+                                            </b-field>
+                                        </div>
+                                    </div>
+                                    <div class="column is-4">
+                                        <div class="field">
+                                            <label class="label">เวลาทำงาน ( ชั่วโมง/วัน )</label>
+                                            <b-field>
+                                                <b-input type="text" v-model="showDetail.timework" readonly></b-input>
+                                            </b-field>
+                                        </div>
+                                    </div>
+                                    <div class="column is-4">
+                                        <div class="field">
+                                            <label class="label">วันหยุด</label>
+                                            <b-field>
+                                                <b-input type="text" v-model="showDetail.freeday" readonly></b-input>
+                                            </b-field>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="columns" style="align-items:flex-end"></div>
+                                <div class="columns">
+                                    <div class="column is-6">
+                                        <div class="field">
+                                            <label class="label">E-mail</label>
+                                            <div class="control">
+                                                <div class="field has-addons">
+                                                    <div class="control is-expanded">
+                                                        <b-field>
+                                                            <b-input type="text" v-model="showDetail.u_email" readonly></b-input>
+                                                        </b-field>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="column is-6">
+                                        <div class="field">
+                                            <label class="label">เบอร์โทรศัพท์</label>
+                                            <div class="control">
+                                                <div class="field has-addons">
+                                                    <div class="control is-expanded">
+                                                        <b-field>
+                                                            <b-input type="text" v-model="showDetail.com_phone" readonly></b-input>
+                                                        </b-field>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="columns" style="align-items:flex-end">
+                                    <div class="column is-12">
+                                        <div class="field">
+                                            <label class="label">ที่อยู่บริษัท</label>
+                                            <b-field>
+                                                <b-input type="text" v-model="showDetail.com_address" readonly></b-input>
+                                            </b-field>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="colmns">
+                                    <p> <strong>ทักษะที่ต้องการ : </strong>
+                                        <span v-for="(skillList,i) in skillList[indexSkill]" :key="i" :value="i">
+                                            <span v-for style="margin: 2px;" class="tag is-success is-medium is-light">
+                                                {{skillList.skill_name}}
+                                            </span>
+                                        </span>
+
+                                    </p>
+                                </div>
+                                <hr />
+                            </div>
+                        </div>
+                    </b-modal>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    <!-- </div> -->
+                </div>
+                <div style="box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+                background-color: rgba(255, 255, 255, 0.9);
+                margin: 20px;text-align: center;" class="column is-centered">
+                    <h1>พื้นที่โฆษณา</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="./js/buefy.min.js"></script>
+    <style lang="scss" scoped>
+        .box-input {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px 20px 20px 20px;
+            margin: 20px;
+        }
+        
+        .work-list {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px 15px 15px 15px;
+            min-height: 86vh;
+            margin: 20px;
+            margin-top: 25px;
+        }
+    </style>
+    <script defer>
+        // --- เขียน Vue ในนี้จ้า ---
+        new Vue({
+            el: "#app",
+            data: {
+                cerUser: "",
+                Invite: [],
+                skillList: [],
+                showDetail: [],
+                popupVar: false,
+                indexSkill: 0,
+            },
+            computed: {},
+            methods: {
+                ///////////////////////// check for Pre-Dek /////////////////////
+                checkUserIsLogin() {
+                    const loadingComponent = this.$buefy.loading.open();
+                    fetch("/api/check", {
+                            method: "POST",
+                        })
+                        .then(response => {
+                            if (response.ok) return response.json()
+                            else window.location.href = "./loginUser"
+                        })
+                        .then(data => {
+                            this.cerUser = data;
+                            if (data.u_role === 'admin' || (data.u_role === 'pre-dek' && data.activate_status === 'success')) {
+                                // window.location.href = "./pre-find.html"
+                            } else if (data.u_role === 'work') {
+                                if (data.activate_status === 'unsuccess') {
+                                    window.location.href = "./workDetail"
+                                } else {
+                                    window.location.href = "./workHome"
+                                }
+                            } else {
+                                window.location.href = "./preDekDetail"
+                            }
+                        })
+                    setTimeout(() => loadingComponent.close(), 1000)
+                },
+                ////////////////////////////////////////////////////////////////////
+                /////////////////////////logout////////////////////////////////////
+                checkUserLogout() {
+                    fetch("/api/logout")
+                        .then(response => {
+                            if (response.ok) {
+                                window.location.href = "./loginUser"
+                            }
+                        })
+                },
+                ///////////////////////////////////////////////////////////////////////
+                InviteList() {
+                    const loadingComponent = this.$buefy.loading.open();
+                    fetch("/api/workInterested")
+                        .then(response => {
+                            if (response.ok) return response.json()
+                            else {
+                                this.$buefy.toast.open({
+                                    duration: 3000,
+                                    message: 'รับข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง!',
+                                    type: 'is-danger'
+                                })
+                            }
+                        })
+                        .then(data => {
+                            this.Invite = data.Detail;
+                            this.skillList = data.skillList;
+                            this.change_to_humandate();
+                            this.Age();
+                        })
+                    setTimeout(() => loadingComponent.close(), 1000)
+                },
+                change_to_humandate: function() {
+                    for (i = 0; i < this.Invite.length; i++) {
+                        var todate = new Date(this.Invite[i].interviewDay).getDate();
+                        var tomonth = new Date(this.Invite[i].interviewDay).getMonth() + 1;
+                        var toyear = new Date(this.Invite[i].interviewDay).getFullYear();
+                        var original_date = todate + '/' + tomonth + '/' + toyear;
+                        this.Invite[i].interDate = original_date;
+                    }
+                },
+                Age: function() {
+                    for (i = 0; i < this.Invite.length; i++) {
+                        var Age = this.Invite[i].agemax;
+                        if (this.Invite[i].agemax === this.Invite[i].agemin) {
+                            Age = this.Invite[i].agemax;
+                        } else if (this.Invite[i].agemax === 100) {
+                            Age = this.Invite[i].agemin + " " + "ขึ้นไป";
+                        } else if (this.Invite[i].agemin === 0) {
+                            Age = "ไม่เกิน" + " " + this.Invite[i].agemax;
+                        } else {
+                            Age = this.Invite[i].agemin + " - " + this.Invite[i].agemax;
+                        }
+                        console.log(Age)
+                        this.Invite[i].Age = Age;
+                    }
+                },
+                gotprofile() {
+                    window.location.href = "./preDekProfile"
+                },
+                popup(index) {
+                    this.popupVar = true;
+                    this.indexSkill = index;
+                    this.showDetail = this.Invite[index];
+                }
+            },
+            created: function() {
+                this.checkUserIsLogin();
+                this.InviteList();
+            },
+        }, );
+    </script>
+
+
+
+
+
+</body>
+
+</html>

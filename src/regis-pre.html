@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon.svg" />
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon.svg" />
+    <link rel="manifest" href="./site.webmanifest" />
+    <link rel="preconnect" href="https://unpkg.com/" />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com/" />
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css" />
+    <link rel="stylesheet" href="./css/master.css" />
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/2.5.94/css/materialdesignicons.min.css">
+    <!-- --- เปลี่ยนชื่อหน้าใน Tag นี้ --- -->
+    <title>Pre-Dek Work | Register</title>
+</head>
+
+<body style=" margin-right:0vh; background-image: url('../assets/background.png');background-size: cover; background-repeat: no-repeat; background-attachment: fixed; background-position: center;">
+    <div id="app">
+        <!-- --- เริ่มแก้ไขตั้งแต่ตรงนี้ --- -->
+        <div>
+            <div class="columns is-mobile is-vcentered is-centered">
+                <div class="column is-5-tablet is-12-mobile content box-input" style="margin: 25px; margin-top: 50px;">
+                    <div style="width:80%;margin:auto">
+                        <form>
+                            <div class="spacer is-1x"></div>
+                            <h1>ข้อมูลส่วนตัว</h1>
+                            <hr />
+                            <b-field label="ชื่อจริง" type="input">
+                                <b-input v-model="fname" placeholder="First Name"></b-input>
+                            </b-field>
+                            <b-field label="นามสกุล">
+                                <b-input v-model="lname" placeholder="Last Name"></b-input>
+                            </b-field>
+                            <b-field label="วันเกิด">
+                                <b-datepicker v-model='bDay' placeholder="Click to select..." :max-date="maxDate">
+                                </b-datepicker>
+                            </b-field>
+                            <div class="field">
+                                <label class="label">เพศ</label>
+                                <div class="control">
+                                    <b-field>
+                                        <b-select class="is-fullwidth" placeholder="sex" v-model="sexCh" expanded>
+                                            <option v-for="(list,i) in sexlist" :key="i">{{list.role}}
+                                            </option>
+                                        </b-select>
+                                    </b-field>
+                                </div>
+                            </div>
+                            <div v-if="sexCh==='อื่นๆ'" class="field">
+                                <b-input v-model="sex" placeholder="โปรดระบุ"></b-input>
+                            </div>
+                            <div class="field">
+                                <label class="label">ที่อยู่</label>
+                                <div class="control">
+                                    <textarea class="textarea" placeholder="address" v-model="address"></textarea>
+                                </div>
+                            </div>
+                            <b-field label="เบอร์โทร" type="input">
+                                <b-input type="number" v-model="phone" placeholder="0XXXXXXXXX"></b-input>
+                            </b-field>
+                            <!-- ////////////////////////////////////////////////////////////////////////// -->
+                            <div class="field">
+                                <label class="label">สถานะ</label>
+                                <div class="control">
+                                    <b-field>
+                                        <b-select class="is-fullwidth" v-model="status" expanded>
+                                            <option v-for="(list,i) in statusList" :key="i">{{list.status}}
+                                            </option>
+                                        </b-select>
+                                    </b-field>
+                                </div>
+                            </div>
+                            <!-- ////////////////////////////////////////////////////////// -->
+                            <b-field label="สัญชาติ" type="input">
+                                <b-input v-model="nationality" placeholder="nationality"></b-input>
+                            </b-field>
+                            <b-field label="เชื้อชาติ" type="input">
+                                <b-input v-model="race" placeholder="race"></b-input>
+                            </b-field>
+                            <b-field label="ศาสนา" type="input">
+                                <b-input v-model="religion" placeholder="religion"></b-input>
+                            </b-field>
+                            <!-- ////////////////////////////////////////////////////////// -->
+                            <div class="field">
+                                <label class="label">ระดับการศึกษา</label>
+                                <div class="control">
+                                    <b-field>
+                                        <b-select class="is-fullwidth" v-model="elevel" expanded>
+                                            <option v-for="(list,i) in elevelList" :key="i">{{list.level}}
+                                            </option>
+                                        </b-select>
+                                    </b-field>
+                                </div>
+                            </div>
+                            <!-- ////////////////////////////////////////////////////////// -->
+                            <b-field label="คณะ" type="input">
+                                <b-input v-model="Faculty" placeholder="Faculty" required></b-input>
+                            </b-field>
+                            <b-field label="สาขา" type="input">
+                                <b-input v-model="Department" placeholder="Department" required></b-input>
+                            </b-field>
+                            <b-field label="มหาวิทยาลัย" type="input">
+                                <b-input v-model="University" placeholder="University" required></b-input>
+                            </b-field>
+                            <b-field label="จบด้วยผลการเรียนเฉลี่ย" type="input">
+                                <b-input type="number" max="4.00" step="0.01" v-model="GPAX" placeholder="4.00" required></b-input>
+                            </b-field>
+                            <b-field label="ทักษะที่มี">
+                                <b-taginput v-model="tags" :data="skillList" autocomplete :allow-new=false :open-on-focus=true field="skill_name" placeholder="Add a tag" @typing="getFilteredTags">
+                                </b-taginput>
+                            </b-field>
+                            <!-- <pre style="max-height: 400px"><b>Tags:</b>{{ tags }}</pre> -->
+                            <div class="spacer is-2x"></div>
+                            <b-button type="is-primary is-success" @click="addDetail()" expanded>สมัครสมาชิก</b-button>
+                            <div class="spacer"></div>
+                            <div class="has-text-centered">
+                                <a @click="checkUserLogout()" style="text-decoration:underline ">กลับไปหน้าเข้าสู่ระบบ</a>
+                            </div>
+                            <div class="spacer is-2x"></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- --- อย่าแก้อะไรหลังจากนี้ --- -->
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="./js/buefy.min.js"></script>
+    <style lang="scss" scoped>
+        .box-input {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+            background-color: rgba(255, 255, 255, 0.9);
+            ;
+            border-radius: 40px 40px 40px 40px;
+        }
+    </style>
+    <script defer>
+        // --- เขียน Vue ในนี้จ้า ---
+        new Vue({
+            el: "#app",
+
+            data: {
+                maxDate: new Date(),
+                sexlist: [{
+                    role: "ชาย"
+                }, {
+                    role: "หญิง"
+                }, {
+                    role: "อื่นๆ"
+                }],
+                elevelList: [{
+                    level: "ระดับปริญญาตรี"
+                }, {
+                    level: "ระดับปริญญาโท"
+                }, {
+                    level: "ระดับปริญญาเอก"
+                }],
+                statusList: [{
+                    status: "โสด"
+                }, {
+                    status: "แต่งงานแล้ว"
+                }, {
+                    status: "หย่าร้าง"
+                }],
+                status: "",
+                elevel: "",
+                sexCh: "",
+                fname: "",
+                lname: "",
+                bDay: new Date(),
+                address: "",
+                phone: "",
+                sex: "",
+                nationality: "",
+                race: "",
+                religion: "",
+                Faculty: "",
+                Department: "",
+                University: "",
+                GPAX: "",
+                skillList: [],
+                tags: [],
+            },
+            computed: {},
+            methods: {
+                addDetail() {
+                    const loadingComponent = this.$buefy.loading.open();
+                    if (this.sex === "") {
+                        this.sex = this.sexCh;
+                    }
+                    if (this.status === "" ||
+                        this.elevel === "" ||
+                        this.fname === "" ||
+                        this.lname === "" ||
+                        this.bDay === "" ||
+                        this.address === "" ||
+                        this.phone === "" ||
+                        this.sex === "" ||
+                        this.nationality === "" ||
+                        this.race === "" ||
+                        this.religion === "" ||
+                        this.Faculty === "" ||
+                        this.Department === "" ||
+                        this.University === "" ||
+                        this.GPAX === ""
+                    ) {
+                        this.$buefy.toast.open({
+                            duration: 3000,
+                            message: 'กรุณาหรอกข้อมูลให้ครบ!',
+                            type: 'is-danger'
+                        })
+                        loadingComponent.close()
+                    } else {
+
+                        fetch("/api/addDetailPreDek", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                status: this.status,
+                                elevel: this.elevel,
+                                fname: this.fname,
+                                lname: this.lname,
+                                bDay: +new Date(this.bDay),
+                                address: this.address,
+                                phone: this.phone,
+                                sex: this.sex,
+                                nationality: this.nationality,
+                                race: this.race,
+                                religion: this.religion,
+                                Faculty: this.Faculty,
+                                Department: this.Department,
+                                University: this.University,
+                                GPAX: this.GPAX,
+                                tags: this.tags,
+                            }),
+                        }).then(response => {
+                            if (response.ok) {
+                                this.$buefy.toast.open({
+                                    duration: 3000,
+                                    message: 'ลงทะเบียนสำเร็จ!',
+                                    type: 'is-success'
+                                })
+                                return window.location.href = "./preDekProfile"
+                            } else {
+                                this.$buefy.toast.open({
+                                    duration: 3000,
+                                    message: 'ลงทะเบียนไม่สำเร็จ!',
+                                    type: 'is-danger'
+                                })
+                            }
+                        })
+                        loadingComponent.close()
+                    }
+                },
+                //////////////////////////////////////////////////////////////////
+                getFilteredTags(text) {
+                    this.filteredTags = data.filter((option) => {
+                        return option.skill_name
+                            .toString()
+                            .toLowerCase()
+                            .indexOf(text.toLowerCase()) >= 0
+                    })
+                },
+                /////////////////////////logout////////////////////////////////////
+                checkUserLogout() {
+                    fetch("/api/logout")
+                        .then(response => {
+                            if (response.ok) {
+                                window.location.href = "./loginUser"
+                            }
+                        })
+                },
+                ///////////////////////////////////////////////////////////////////////
+                getTags() {
+                    fetch("/api/getskill")
+                        .then(response => {
+                            if (response.ok) return response.json()
+                            throw {
+                                message: response.status + " " + response.statusText,
+                                response: response
+                            }
+                        })
+                        .then(data => {
+                            this.skillList = data
+                        })
+                        .catch(error => {
+                            const loadingComponent = this.$buefy.loading.open()
+                            setTimeout(() => location.reload(), 3 * 1000)
+                            this.$buefy.snackbar.open({
+                                message: 'เกิดข้อผิดพลาด ' + '#' + error.message,
+                                type: 'is-warning',
+                                position: 'is-top',
+                                actionText: 'Retry',
+                                onAction: () => {
+                                    location.reload();
+                                }
+                            })
+                        });
+                },
+            },
+            created: function() {
+                this.getTags();
+            }
+        });
+    </script>
+
+
+
+
+
+</body>
+
+</html>

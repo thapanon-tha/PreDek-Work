@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon.svg" />
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon.svg" />
+    <link rel="manifest" href="./site.webmanifest" />
+    <link rel="preconnect" href="https://unpkg.com/" />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com/" />
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css" />
+    <link rel="stylesheet" href="./css/master.css" />
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/2.5.94/css/materialdesignicons.min.css">
+    <!-- --- เปลี่ยนชื่อหน้าใน Tag นี้ --- -->
+    <title>Pre-Dek Work | Upload Prefile</title>
+</head>
+
+<body style=" background-image: url('../assets/background.png');background-size: cover; background-position: fixed; background-repeat: no-repeat; background-attachment: fixed; background-position: center;">
+    <div id="app">
+        <!-- --- เริ่มแก้ไขตั้งแต่ตรงนี้ --- -->
+        <!--/////////////////////////////////////////////navbar//////////////////////////////////////////////////-->
+        <nav style=" padding: 1rem;" class="navbar" role="navigation" aria-label="main navigation">
+            <div class="container">
+                <div class="navbar-item">
+                    <img src="./favicon.svg" style="max-height:50px">
+                </div>
+                <div id="navbarBasicExample" class="navbar-menu">
+                    <div class="navbar-start">
+                        <b-navbar-item href="/">หน้าแรก</b-navbar-item>
+                    </div>
+                    <div class="navbar-end">
+                        <div class="navbar-item">
+                            <b-button type="is-info" outlined>{{cerUser.u_email}}</b-button>
+                        </div>
+                        <div class="navbar-item">
+                            <b-button type="is-danger" @click="checkUserLogout()" outlined>Logout</b-button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <!--/////////////////////////////////////////////navbar//////////////////////////////////////////////////-->
+        <div class="columns is-mobile is-vcentered is-centered">
+            <div class="column is-5-tablet is-12-mobile content box-input" style="margin: 25px; margin-top: 50px;">
+                <div style="margin:100px">
+                    <form method="POST" action="/api/uploadfile" enctype="multipart/form-data">
+                        <div class="file is-boxed is-centered">
+                            <label class="file-label">
+                          <input class="file-input" type="file" name="file">
+                          <span class="file-cta content has-text-centered" style="width: 100%;height: 180px; ">
+                            <div class="content has-text-centered" style="margin-top: 5%;">
+                                <p>
+                                  <b-icon icon="upload" size="is-large"></b-icon>
+                                </p>
+                                <p>กดเพื่อเลือกรูปประจำตัวของคุณหรือบริษัท</p>
+                              </div>
+                          </span>
+                        </label>
+                        </div>
+                        <div class="spacer is-2x"></div>
+                        <div class="buttons is-centered is-one-third">
+                            <input class="button is-info is-outlined " type="submit" value="Upload" @click="test()" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- --- อย่าแก้อะไรหลังจากนี้ --- -->
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="./js/buefy.min.js"></script>
+    <style lang="scss" scoped>
+        .box-input {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 40px 40px 40px 40px;
+            margin: 20px;
+        }
+    </style>
+
+    <script defer>
+        // --- เขียน Vue ในนี้จ้า ---
+        new Vue({
+            el: "#app",
+            data: {
+                cerUser: [],
+            },
+            computed: {},
+            methods: {
+                ///////////////////////// check for Pre-Dek /////////////////////
+                checkUserIsLogin() {
+                    const loadingComponent = this.$buefy.loading.open();
+                    fetch("/api/check", {
+                            method: "POST",
+                        })
+                        .then(response => {
+                            if (response.ok) return response.json()
+                            else window.location.href = "./loginUser"
+                        })
+                        .then(data => {
+                            this.cerUser = data;
+                        })
+                    setTimeout(() => loadingComponent.close(), 1000)
+                },
+                ////////////////////////////////////////////////////////////////////
+
+                /////////////////////////logout////////////////////////////////////
+                checkUserLogout() {
+                    fetch("/api/logout")
+                        .then(response => {
+                            if (response.ok) {
+                                window.location.href = "./loginUser"
+                            }
+                        })
+                }
+                ///////////////////////////////////////////////////////////////////////
+            },
+            created: function() {
+                this.checkUserIsLogin();
+            },
+        });
+    </script>
+</body>
+
+</html>

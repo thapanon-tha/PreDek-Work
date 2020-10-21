@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon.svg" />
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon.svg" />
+    <link rel="manifest" href="./site.webmanifest" />
+    <link rel="preconnect" href="https://unpkg.com/" />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com/" />
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css" />
+    <link rel="stylesheet" href="./css/master.css" />
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/2.5.94/css/materialdesignicons.min.css">
+    <!-- --- เปลี่ยนชื่อหน้าใน Tag นี้ --- -->
+    <title>Pre-Dek Work | Solf Skill</title>
+</head>
+
+<body style=" background-image: url('../assets/background.png');background-size: cover; background-position: fixed; background-repeat: no-repeat; background-attachment: fixed; background-position: center;">
+    <div id="app">
+        <!-- --- เริ่มแก้ไขตั้งแต่ตรงนี้ --- -->
+        <!--/////////////////////////////////////////////navbar//////////////////////////////////////////////////-->
+        <nav style=" padding: 1rem;" class="navbar" role="navigation" aria-label="main navigation">
+            <div class="container">
+                <div class="navbar-item">
+                    <img src="./favicon.svg" style="max-height:50px">
+                </div>
+                <div id="navbarBasicExample" class="navbar-menu">
+                    <div class="navbar-start">
+                        <b-navbar-item href="/preDekHome">หน้าแรก</b-navbar-item>
+                        <b-navbar-item href="/preDekResponse">บริษัทที่สนใจคุณ</b-navbar-item>
+                        <b-navbar-item href="/prePartner">ฝึกประสบการณ์</b-navbar-item>
+                        <b-navbar-item href="/preSolfSkill">ฝึก Solf Skill</b-navbar-item>
+                    </div>
+                    <div class="navbar-end">
+                        <div class="navbar-item">
+                            <b-button type="is-info" @click="gotprofile()" outlined>{{cerUser.u_email}}</b-button>
+                        </div>
+                        <div class="navbar-item">
+                            <b-button type="is-danger" @click="checkUserLogout()" outlined>Logout</b-button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <!--/////////////////////////////////////////////navbar//////////////////////////////////////////////////-->
+        <div class="container ">
+            <div style="height: 400px;margin-top: 20px;" class="columns">
+                <iframe style="padding: 10px;" width="720" height="400" src="https://www.youtube.com/embed/6felvmHGdTg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <iframe style="padding: 10px;" width="720" height="400" src="https://www.youtube.com/embed/fL8I-wuUDvg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <div style="height: 400px;" class="columns">
+                <iframe style="padding: 10px;" width="720" height="400" src="https://www.youtube.com/embed/7mSODmk9BDc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <iframe style="padding: 10px;" width="720" height="400" src="https://www.youtube.com/embed/CGqUSEosnJw" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+        <!-- --- อย่าแก้อะไรหลังจากนี้ --- -->
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="./js/buefy.min.js"></script>
+
+    <script defer>
+        // --- เขียน Vue ในนี้จ้า ---
+        new Vue({
+            el: "#app",
+            data: {
+                cerUser: [],
+            },
+            computed: {},
+            methods: {
+                ///////////////////////// check for Pre-Dek /////////////////////
+                checkUserIsLogin() {
+                    const loadingComponent = this.$buefy.loading.open();
+                    fetch("/api/check", {
+                            method: "POST",
+                        })
+                        .then(response => {
+                            if (response.ok) return response.json()
+                            else window.location.href = "./loginUser"
+                        })
+                        .then(data => {
+                            this.cerUser = data;
+                            if (data.u_role === 'admin' || (data.u_role === 'pre-dek' && data.activate_status === 'success')) {
+                                console.log()
+                            } else if (data.u_role === 'work') {
+                                if (data.activate_status === 'unsuccess') {
+                                    window.location.href = "./workDetail"
+                                } else {
+                                    window.location.href = "./workHome"
+                                }
+                            } else {
+                                window.location.href = "./preDekDetail"
+                            }
+                        })
+                    setTimeout(() => loadingComponent.close(), 1000)
+                },
+                ////////////////////////////////////////////////////////////////////
+
+                /////////////////////////logout////////////////////////////////////
+                checkUserLogout() {
+                    fetch("/api/logout")
+                        .then(response => {
+                            if (response.ok) {
+                                window.location.href = "./loginUser"
+                            }
+                        })
+                },
+                gotprofile() {
+                    window.location.href = "./preDekProfile"
+                }
+                ///////////////////////////////////////////////////////////////////////
+            },
+            created: function() {
+                this.checkUserIsLogin();
+            },
+        });
+    </script>
+</body>
+
+</html>

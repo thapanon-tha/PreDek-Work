@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon.svg" />
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon.svg" />
+    <link rel="manifest" href="./site.webmanifest" />
+    <link rel="preconnect" href="https://unpkg.com/" />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com/" />
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/buefy/dist/buefy.min.css" />
+    <link rel="stylesheet" href="./css/master.css" />
+    <link rel="stylesheet" href="https://cdn.materialdesignicons.com/2.5.94/css/materialdesignicons.min.css">
+    <!-- --- เปลี่ยนชื่อหน้าใน Tag นี้ --- -->
+    <title>Pre-Dek Work | Register</title>
+</head>
+
+<body style=" background-image: url('../assets/background.png');background-size: cover; background-repeat: no-repeat; background-attachment: fixed; background-position: center;">
+    <div id="app">
+        <!-- --- เริ่มแก้ไขตั้งแต่ตรงนี้ --- -->
+        <div>
+            <div class="columns is-mobile is-vcentered is-centered">
+                <div class="column is-5-tablet is-12-mobile content box-input" style="margin: 25px; margin-top: 50px;">
+                    <div style="width:80%;margin:auto">
+                        <form>
+                            <div class="spacer is-1x"></div>
+                            <h1>รายละเอียดเกี่ยวกับบริษัท</h1>
+                            <hr />
+                            <b-field label="ชื่อจริง" type="input">
+                                <b-input v-model="fname" placeholder="First name"></b-input>
+                            </b-field>
+                            <b-field label="นามสกุล" type="input">
+                                <b-input v-model="lname" placeholder="Last Name"></b-input>
+                            </b-field>
+                            <b-field label="ชื่อบริษัท" type="input">
+                                <b-input v-model="com_name" placeholder="Company name"></b-input>
+                            </b-field>
+                            <b-field label="เบอร์โทรสำหรับติดต่อ" type="input">
+                                <b-input type="number" v-model="com_phone" placeholder="0XXXXXXXXX"></b-input>
+                            </b-field>
+                            <div class="field">
+                                <label class="label">ที่อยู่บริษัท</label>
+                                <div class="control">
+                                    <textarea class="textarea" placeholder="Company address" v-model="com_address"></textarea>
+                                </div>
+                            </div>
+                            <div class="spacer is-2x"></div>
+                            <b-button type="is-primary is-success" @click="addComDetail()" expanded>สมัครสมาชิก
+                            </b-button>
+                            <div class="spacer"></div>
+                            <div class="has-text-centered">
+                                <a @click="checkUserLogout()" style="text-decoration:underline ">กลับไปยังหน้าเข้าสู่ระบบ</a>
+                            </div>
+                            <div class="spacer is-2x"></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- --- อย่าแก้อะไรหลังจากนี้ --- -->
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="./js/buefy.min.js"></script>
+    <style lang="scss" scoped>
+        .box-input {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+            background-color: rgba(255, 255, 255, 0.9);
+            ;
+            border-radius: 40px 40px 40px 40px;
+        }
+    </style>
+    <script defer>
+        // --- เขียน Vue ในนี้จ้า ---
+        new Vue({
+            el: "#app",
+            data: {
+                com_name: "",
+                com_address: "",
+                com_phone: "",
+                fname: "",
+                lname: "",
+            },
+            computed: {},
+            methods: {
+                /////////////////////////logout////////////////////////////////////
+                checkUserLogout() {
+                    fetch("/api/logout")
+                        .then(response => {
+                            if (response.ok) {
+                                window.location.href = "./loginUser"
+                            }
+                        })
+                },
+                ///////////////////////////////////////////////////////////////////////
+                addComDetail() {
+                    if (this.com_name === "" || this.com_address === "" || this.com_phone === "" || this.fname === "" || this.lname === "") {
+                        this.$buefy.toast.open({
+                            duration: 3000,
+                            message: 'กรุณาหรอกข้อมูลให้ครบ!',
+                            type: 'is-danger'
+                        })
+                    } else {
+                        fetch("/api/addDetailWork", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                com_name: this.com_name,
+                                com_address: this.com_address,
+                                com_phone: this.com_phone,
+                                fname: this.fname,
+                                lname: this.lname
+                            }),
+                        }).then(response => {
+                            if (response.ok) {
+                                this.$buefy.toast.open({
+                                    duration: 3000,
+                                    message: 'ลงทะเบียนสำเร็จ!',
+                                    type: 'is-success'
+                                })
+                                return window.location.href = "./workProfile"
+                            } else {
+                                this.$buefy.toast.open({
+                                    duration: 3000,
+                                    message: 'ลงทะเบียนไม่สำเร็จ!',
+                                    type: 'is-danger'
+                                })
+                            }
+                        })
+                    }
+                },
+                ///////////////////////////////////////////////////////////////////////////
+
+            },
+        });
+    </script>
+
+
+
+
+
+</body>
+
+</html>
